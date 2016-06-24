@@ -1,3 +1,5 @@
+require_relative('team')
+
 class Player
   attr_reader(:id, :name, :dob, :salary, :team_id)
   def initialize(options, runner)
@@ -12,6 +14,21 @@ class Player
   def save()
     sql = "INSERT INTO players (name, dob, salary, team_id) VALUES ('#{ @name }', '#{ @dob }', '#{ @salary }', '#{ @team_id }' ) RETURNING *"
     return Player.map_items(sql, @runner).first
+  end
+
+  def team()
+    sql = "SELECT * FROM teams WHERE id = #{@team_id}"
+    return Team.map_items(sql, @runner)
+  end
+
+  def self.all(runner)
+    sql = "SELECT * FROM players"
+    return Player.map_items(sql, runner)
+  end
+
+  def self.delete_all(runner)
+    sql = "DELETE FROM players"
+    runner.run(sql)
   end
 
   def self.map_items(sql, runner)
