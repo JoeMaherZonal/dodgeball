@@ -4,6 +4,8 @@ require_relative( '../player' )
 require_relative( '../coach' )
 require_relative( '../match' )
 require_relative( '../team' )
+require_relative( '../league' )
+require_relative( '../viewer' )
 
 
 runner = SqlRunner.new({dbname: 'dodgeball', host: 'localhost'})
@@ -25,7 +27,13 @@ coach1 = Coach.new( {'name' => "Rachel Barry", 'dob' => "01-21-1990", 'salary' =
 coach2 = Coach.new( {'name' => "Luke Barry", 'dob' => "01-21-1990", 'salary' => 45000, 'team_id' => team2.id }, runner).save
 
 match1 = Match.new( {'home_team_id' => team1.id, 'away_team_id' => team2.id, 'away_team_score' => 5, 'home_team_score' => 3}, runner).save
+match2 = Match.new( {'home_team_id' => team2.id, 'away_team_id' => team1.id, 'away_team_score' => 8, 'home_team_score' => 2}, runner).save
+match3 = Match.new( {'home_team_id' => team2.id, 'away_team_id' => team1.id, 'away_team_score' => 2, 'home_team_score' => 2}, runner).save
+match4 = Match.new( {'home_team_id' => team2.id, 'away_team_id' => team1.id, 'away_team_score' => 10, 'home_team_score' => 9}, runner).save
 
+viewer = Viewer.new()
+league = League.new(runner, viewer)
 
+league.run()
 binding.pry
 nil

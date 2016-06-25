@@ -18,7 +18,34 @@ class Player
 
   def team()
     sql = "SELECT * FROM teams WHERE id = #{@team_id}"
-    return Team.map_items(sql, @runner)
+    return Team.map_items(sql, @runner).first
+  end
+
+  def stats()
+    stats = {}
+    stats['name'] = @name
+    stats['dob'] = @dob
+    stats['salary'] = @salary
+    stats['team'] = team.name
+    return stats
+  end
+
+  def update(info)
+    @name = info['name'] if info['name']
+    @dob = info['dob'] if info['dob']
+    @salary = info['salary'] if info['salary']
+    if info['new_team']
+      team = Team.find_by_name(info['new_team'], @runner)
+      @team_id = team.id if !team.nil? && team.team_exists?(team)
+    end
+
+    sql = "UPDATE players SET name = '#{@name}', dob = '#{@dob}', salary = #{@salary}, team_id = #{@team_id} WHERE id = #{@id} "
+    @runner.run(sql)
+  end
+
+  def self.find_by_name(player_name, runner)
+    sql = "SELECT * FROM players WHERE name = '#{player_name}'"
+    return Player.map_items(sql, runner).first
   end
 
   def self.all(runner)
@@ -36,7 +63,5 @@ class Player
     result = players.map{|player| Player.new(player, runner)}
     return result
   end
-
-
 
 end

@@ -14,7 +14,7 @@ CREATE TABLE players (
   name VARCHAR(255) not null,
   dob DATE not null,
   salary INT4 not null,
-  team_id INT4 references teams(id)
+  team_id INT4 references teams(id) ON DELETE CASCADE
 );
 
 CREATE TABLE coachs (
@@ -22,13 +22,13 @@ CREATE TABLE coachs (
   name VARCHAR(255) not null,
   dob DATE not null,
   salary INT4 not null,
-  team_id INT4 references teams(id)
+  team_id INT4 references teams(id) ON DELETE CASCADE
 );
 
 CREATE TABLE matches (
   id SERIAL4 primary key,
-  home_team_id INT4 references teams(id),
-  away_team_id INT4 references teams(id),
+  home_team_id INT4 references teams(id) ON DELETE CASCADE,
+  away_team_id INT4 references teams(id) ON DELETE CASCADE,
   home_team_score INT4 not null,
   away_team_score INT4 not null
 );

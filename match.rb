@@ -22,6 +22,28 @@ class Match
     return Team.map_items(sql, @runner)
   end
 
+  def away_team()
+    sql = "SELECT * FROM teams WHERE id =  #{@away_team_id}"
+    return Team.map_items(sql, @runner).first
+  end
+
+  def home_team()
+    sql = "SELECT * FROM teams WHERE id = #{home_team_id}"
+    return Team.map_items(sql, @runner).first
+  end
+
+  def self.search_by_team(search_crit, runner)
+    sql = "SELECT matches.* FROM matches
+    INNER JOIN teams ON teams.id = matches.away_team_id OR teams.id = matches.home_team_id
+    WHERE teams.name LIKE '%#{search_crit}%'"
+    return Match.map_items(sql, runner)
+  end
+
+  def self.return_match_by_id(match_id)
+    sql "SELECT * FROM matches WHERE id = #{match_id}"
+    return Match.map_items(sql, runner).first
+  end
+
 
   def self.all(runner)
     sql = "SELECT * FROM matches"
