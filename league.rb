@@ -83,11 +83,12 @@ class League
   end
 
   def add_player()
+    teams = Team.all(@runner)
     options = @viewer.get_new_player_info('player')
 
     while true
-    team_name = @viewer.get_team_name_of_player(options['name'])
-    teams = Team.all(@runner)
+    #team_name = @viewer.get_team_name_of_player(options['name'])
+    team_name = teams[rand(0..13)].name
     teams.each {|team| puts team.name} if team_name == "list"
     team = Team.find_by_name(team_name, @runner)
       if !team.nil?
@@ -232,27 +233,45 @@ class League
   end
 
   def update_match()
-    id = find_id()
+    match = find_match()
+    match_info = {}
+    new_home_team_name = @viewer.get_new_home_team()
+    return if new_home_team_name.downcase == "exit"
+      new_home_team = Team.find_team_like(new_home_team_name, @runner)
+      new_away_team_name = @viewer.get_new_away_team()
+      new_away_team = Team.find_team_like(new_away_team_name, @runner)
+      match_info['away_team_id' => new_away_team.id] if new_away_team != nil || new_away_team != ""
+      match_info['home_team_id' => new_home_team.id] if new_home_team != nil || new_home_team != ""
+      match_info = @viewer.get_new_scores(match_info)
+    return if match.nil?
+    return if match_info.nil?
+      match.update(match_info)
+      @viewer.successfuly_updated_match()
+      gets.chomp
   end
 
-  def find_id()
+  def find_match()
     while true
-    search_crit = @viewer.find_match_search_criteria()
-    return if  search_crit.downcase == 'exit'
-    matches = Match.search_by_team(search_crit, @runner)
-    @viewer.not_matching_results() if matches.length == 0
-    @viewer.results_title() if matches.length > 0
-    matches.each do |match|
-      puts "\t#{match.id}\t\t#{match.home_team().name}\t#{match.away_team().name}\t#{match.away_team_score}:#{match.home_team_score}"
-      end
-      break if matches.length > 0
+      search_crit = @viewer.find_match_search_criteria()
+      return if  search_crit.downcase == 'exit'
+      matches = Match.search_by_team(search_crit, @runner)
+      @viewer.not_matching_results() if matches.length == 0
+      @viewer.results_title() if matches.length > 0
+
+      matches.each do |match|
+        puts "\t#{match.id}\t\t#{match.home_team().name}\t#{match.away_team().name}\t#{match.away_team_score}:#{match.home_team_score}"
+        end
+        break if matches.length > 0
     end
 
+    count = 0
     while true
     id = @viewer.select_id()
-    selected_match = Match.return_match_by_id(id)
+    selected_match = Match.return_match_by_id(id, @runner)
       if selected_match.nil?
+        return if count == 3
         @viewer.wrong_id()
+        count += 1
       else
         return selected_match
       end
@@ -284,7 +303,7 @@ class League
     matches = Match.all(@runner)
 
     matches.each do |match|
-      puts "\t#{match.home_team().name}\t#{match.home_team_score} : #{match.away_team_score}\t     #{match.away_team().name}"
+      puts "\t#{match.home_team().name[0..13]}\t#{match.home_team_score} : #{match.away_team_score}\t     #{match.away_team().name[0..13]}"
     end
     gets.chomp
   end

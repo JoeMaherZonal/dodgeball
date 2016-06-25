@@ -45,7 +45,7 @@ class Coach
   end
 
   def self.find_by_name(coach_name, runner)
-    sql = "SELECT * FROM coachs WHERE name = '#{coach_name}'"
+    sql = "SELECT * FROM coachs WHERE name LIKE '%#{coach_name}%'"
     return Coach.map_items(sql, runner).first
   end
 

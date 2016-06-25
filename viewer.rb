@@ -34,21 +34,26 @@ class Viewer
   end
 
   def print_teams_titles()
-    puts "\tTeam names\tWins\t Losses\t    Draws\tPlayers"
-    puts "\t-------------------------------------------------------"
+    puts "\tTeam names\t\tWins\t Losses\t    Draws\tPlayers".blue
   end
 
   def print_team_details(stats)
-    puts "\t#{stats['name']}\t#{stats['wins']}\t #{stats['losses']} \t    #{stats['draws']} \t\t#{stats['players']}"
+    puts "\t#{stats['name'][0..14]}\t\t#{stats['wins']}\t #{stats['losses']} \t    #{stats['draws']} \t\t#{stats['players']}"
   end
 
   def display_team_editor(teams)
     clear()
-    puts "<<< Team Editor >>>"
+    puts "<<< Team Editor >>>".blue
     puts ""
-    puts "Current teams:"
+    puts "Current teams:".blue
+    counter = 0
     teams.each do |team|
-      print "#{team.name}\t"
+      print "#{team.name[0..12]}\t\t"
+      counter += 1
+      if counter > 2
+        puts "\n"
+        counter = 0
+      end
     end
     puts ""
     puts ""
@@ -78,11 +83,10 @@ class Viewer
   def print_players_title()
     puts ""
     puts "\tName\t\tDOB\t\tTeam\t\t  Salary".blue
-    puts "\t--------------------------------------------------------"
   end
 
   def print_player_stats(stats)
-    puts "\t#{stats['name']}\t#{stats['dob']}\t#{stats['team']}\t  £#{stats['salary']}"
+    puts "\t#{stats['name'][0..13]}\t#{stats['dob']}\t#{stats['team'][0..14]}\t  £#{stats['salary']}"
   end
 
   def get_player_update_info(player_name)
@@ -94,7 +98,7 @@ class Viewer
     puts "New DOB:"
     new_dob = get_input()
     puts "New Salary"
-    new_salary = get_input.to_i
+    new_salary = get_input
     puts "New team"
     new_team = get_input
 
@@ -106,6 +110,10 @@ class Viewer
     return new_info
   end
 
+  def time_rand from = 0.0, to = Time.now
+    Time.at(from + rand * (to.to_f - from.to_f))
+  end
+
   def get_new_player_info(type)
     options = {}
     clear()
@@ -113,10 +121,11 @@ class Viewer
     puts ""
     puts "What is the #{type}s name?"
     name = get_input()
-    puts "What is the #{type}s birthdate? [yyyy-dd-mm]"
-    dob = get_input
-    puts "What is this #{type}s salary?"
-    salary = get_input.to_i
+    #puts "What is the #{type}s birthdate? [yyyy-mm-dd]"
+    dob = time_rand()
+    #puts "What is this #{type}s salary?"
+    #salary = get_input.to_i
+    salary = rand(13000..30000).round(-3)
     options['name'] = name
     options['dob'] = dob
     options['salary'] = salary
@@ -248,6 +257,32 @@ class Viewer
     puts ""
     puts "Unable to add #{name} to Teams".red
     sleep(1)
+  end
+
+  def get_new_home_team()
+    clear()
+    puts "What team played at home?"
+    return get_input()
+  end
+
+  def get_new_away_team()
+    puts "What team played away?"
+    return get_input()
+  end
+
+  def successfuly_updated_match()
+    puts ""
+    puts "Successfuly updated match!".green
+  end
+
+  def get_new_scores(info)
+    puts "What did the away team score?"
+    a_score = get_input()
+    puts "What did the home team score?"
+    h_score = get_input()
+    info['away_team_score'] = a_score if a_score != ""
+    info['home_team_score'] = h_score if h_score != ""
+    return info
   end
 
   def clear()

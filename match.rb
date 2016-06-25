@@ -32,6 +32,15 @@ class Match
     return Team.map_items(sql, @runner).first
   end
 
+  def update(info)
+      @away_team_id = info['away_team_id'] if info['away_team_id']
+      @home_team_id = info['home_team_id'] if info['home_team_id']
+      @away_team_score = info['away_team_score'] if info['away_team_score']
+      @home_team_score = info['home_team_score'] if info['home_team_score']
+      sql = "UPDATE matches SET away_team_id = #{@away_team_id}, home_team_id = #{@home_team_id}, away_team_score = #{@away_team_score}, home_team_score = #{@home_team_score} WHERE id = #{@id} "
+      @runner.run(sql)
+  end
+
   def self.search_by_team(search_crit, runner)
     sql = "SELECT matches.* FROM matches
     INNER JOIN teams ON teams.id = matches.away_team_id OR teams.id = matches.home_team_id
@@ -39,11 +48,10 @@ class Match
     return Match.map_items(sql, runner)
   end
 
-  def self.return_match_by_id(match_id)
-    sql "SELECT * FROM matches WHERE id = #{match_id}"
+  def self.return_match_by_id(match_id, runner)
+    sql = "SELECT * FROM matches WHERE id = #{match_id}"
     return Match.map_items(sql, runner).first
   end
-
 
   def self.all(runner)
     sql = "SELECT * FROM matches"

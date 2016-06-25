@@ -76,11 +76,19 @@ class Team
     end
     return total
   end
+
+
+  def self.find_team_like(search_crit, runner)
+    sql = "SELECT * FROM teams WHERE name LIKE '%#{search_crit}%' "
+    team = Team.map_items(sql, runner).first
+    return if team.nil?
+    return team
+  end
   
   def self.find_by_name(team_name, runner)
-    sql = "SELECT * FROM teams WHERE name = '#{team_name}'"
+    sql = "SELECT * FROM teams WHERE name LIKE '%#{team_name}%'"
    team = Team.map_items(sql, runner).first
-   return if team == nil
+   return if team.nil?
    return team
   end
 
